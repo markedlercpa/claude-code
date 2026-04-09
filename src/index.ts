@@ -4,6 +4,8 @@ import { z } from "zod";
 import { registerKarbonTools } from "./karbon/tools.js";
 import { registerOutlookTools } from "./outlook/tools.js";
 import { registerReportingTools } from "./reporting/tools.js";
+import { registerHubSpotTools } from "./hubspot/tools.js";
+import { registerMigrationTools } from "./migration/tools.js";
 
 const server = new McpServer({
   name: "executive-assistant",
@@ -104,6 +106,8 @@ Provide a concise status update I could share with a partner.`,
 registerKarbonTools(server);
 registerOutlookTools(server);
 registerReportingTools(server);
+registerHubSpotTools(server);
+registerMigrationTools(server);
 
 // ── Start ─────────────────────────────────────────────────
 

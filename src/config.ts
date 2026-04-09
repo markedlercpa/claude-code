@@ -17,4 +17,8 @@ export const config = {
     graphBaseUrl: "https://graph.microsoft.com/v1.0",
     tokenUrl: "https://login.microsoftonline.com",
   },
+  hubspot: {
+    accessToken: process.env.HUBSPOT_ACCESS_TOKEN ?? "",
+    baseUrl: "https://api.hubapi.com",
+  },
 } as const;

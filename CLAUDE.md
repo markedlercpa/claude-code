@@ -1,8 +1,8 @@
 # Executive Assistant MCP Server
 
 An MCP (Model Context Protocol) server that gives Claude skills to manage your
-work through **Karbon** and **Microsoft Outlook**, plus generate operational
-reports for your firm.
+work through **Karbon**, **Microsoft Outlook**, and **HubSpot**, plus generate
+operational reports and migrate data between systems.
 
 ## Architecture
 
@@ -14,6 +14,11 @@ src/
 ├── karbon/
 │   ├── client.ts         # Karbon API client (contacts, orgs, work items, tasks, notes, time)
 │   └── tools.ts          # MCP tool definitions for Karbon
+├── hubspot/
+│   ├── client.ts         # HubSpot CRM API client (contacts, companies, deals, associations)
+│   └── tools.ts          # MCP tool definitions for HubSpot
+├── migration/
+│   └── tools.ts          # Karbon → HubSpot migration with lifecycle tagging
 ├── outlook/
 │   ├── client.ts         # Microsoft Graph API client (email, calendar)
 │   └── tools.ts          # MCP tool definitions for Outlook
@@ -21,7 +26,7 @@ src/
     └── tools.ts          # Composite reporting tools (daily briefing, workload, deadlines)
 ```
 
-## Available Tools (38 total)
+## Available Tools (58 total)
 
 ### Karbon (18 tools)
 - `karbon_search_contacts` / `karbon_get_contact` / `karbon_list_contacts`
@@ -39,6 +44,18 @@ src/
 - `outlook_update_email` / `outlook_move_email` / `outlook_delete_email`
 - `outlook_list_folders`
 - `outlook_list_calendar_events` / `outlook_create_calendar_event` / `outlook_delete_calendar_event`
+
+### HubSpot (16 tools)
+- `hubspot_search_contacts` / `hubspot_get_contact` / `hubspot_list_contacts`
+- `hubspot_create_contact` / `hubspot_update_contact` / `hubspot_delete_contact`
+- `hubspot_search_companies` / `hubspot_create_company` / `hubspot_update_company`
+- `hubspot_search_deals` / `hubspot_create_deal` / `hubspot_update_deal`
+- `hubspot_associate_contact_company` / `hubspot_associate_deal_contact` / `hubspot_associate_deal_company`
+
+### Migration — Karbon → HubSpot (3 tools)
+- `migrate_karbon_to_hubspot` — Full migration with lifecycle tagging (supports dry run)
+- `preview_lifecycle_tags` — Preview lifecycle stage assignments without migrating
+- `migrate_karbon_contact_to_hubspot` — Migrate a single contact with lifecycle tagging
 
 ### Operational Reporting (6 tools)
 - `report_daily_briefing` — Calendar + emails + overdue work items
@@ -71,6 +88,13 @@ Access Key and Bearer Token.
 4. Complete the OAuth flow to obtain access + refresh tokens
 5. Add Client ID, Client Secret, Tenant ID, and tokens to `.env`
 
+### HubSpot Credentials
+1. Go to **HubSpot → Settings → Integrations → Private Apps**
+2. Create a new private app with scopes: `crm.objects.contacts.write`,
+   `crm.objects.contacts.read`, `crm.objects.companies.write`,
+   `crm.objects.companies.read`, `crm.objects.deals.write`, `crm.objects.deals.read`
+3. Copy the access token to `.env`
+
 ## Usage with Claude Code
 
 Add to your `.mcp.json`:
@@ -88,7 +112,8 @@ Add to your `.mcp.json`:
         "MICROSOFT_CLIENT_SECRET": "...",
         "MICROSOFT_TENANT_ID": "...",
         "MICROSOFT_ACCESS_TOKEN": "...",
-        "MICROSOFT_REFRESH_TOKEN": "..."
+        "MICROSOFT_REFRESH_TOKEN": "...",
+        "HUBSPOT_ACCESS_TOKEN": "..."
       }
     }
   }
@@ -103,3 +128,7 @@ Then ask Claude things like:
 - "Send an email to jane@example.com about the meeting tomorrow"
 - "Give me a team workload report"
 - "What deadlines do I have this week?"
+- "Preview lifecycle tags for my Karbon contacts"
+- "Migrate all Karbon data to HubSpot (dry run first)"
+- "Migrate contact John Smith to HubSpot"
+- "Create a company in HubSpot for Acme Corp as a customer"
