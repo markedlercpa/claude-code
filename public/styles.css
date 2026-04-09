@@ -1,0 +1,261 @@
+/* ── Reset & Base ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f5f7fa;
+  color: #1a1a2e;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #16213e;
+}
+.subtitle {
+  margin-top: 0.5rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* ── Calendar ────────────────────────────────────────── */
+.calendar-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.calendar-nav h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.calendar-nav button {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.calendar-nav button:hover { background: #f0f0f0; }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.day-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+
+#calendar-days {
+  display: contents;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.15s;
+  position: relative;
+  border: 2px solid transparent;
+}
+.day-cell:hover:not(.disabled):not(.empty) {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.day-cell.selected {
+  border-color: #16213e;
+}
+
+/* Availability states */
+.day-cell.available { background: #e8f5e9; color: #2e7d32; }
+.day-cell.limited   { background: #fff8e1; color: #f57f17; }
+.day-cell.full      { background: #ffebee; color: #c62828; cursor: not-allowed; opacity: 0.7; }
+.day-cell.disabled  { background: #f5f5f5; color: #ccc; cursor: default; }
+.day-cell.empty     { background: transparent; cursor: default; }
+
+.day-cell .slots {
+  font-size: 0.6rem;
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot.available { background: #66bb6a; }
+.dot.limited   { background: #fdd835; }
+.dot.full      { background: #ef5350; }
+
+/* ── Booking Panel ───────────────────────────────────── */
+.booking-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  animation: slideIn 0.25s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.booking-panel h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.slots-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.slots-badge.green  { background: #e8f5e9; color: #2e7d32; }
+.slots-badge.yellow { background: #fff8e1; color: #f57f17; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.form-group { display: flex; flex-direction: column; }
+.form-group.full-width { margin-bottom: 1rem; }
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #333;
+}
+.req { color: #e53935; }
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #16213e;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary {
+  background: #16213e;
+  color: #fff;
+}
+.btn-primary:hover { background: #0f3460; }
+.btn-primary:disabled { background: #999; cursor: not-allowed; }
+
+.btn-secondary {
+  background: #eee;
+  color: #333;
+}
+.btn-secondary:hover { background: #ddd; }
+
+/* ── Confirmation ────────────────────────────────────── */
+.confirmation {
+  background: #fff;
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  text-align: center;
+  animation: slideIn 0.25s ease;
+}
+.confirm-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+.confirmation h3 { margin-bottom: 0.5rem; }
+.confirmation p { color: #555; margin-bottom: 1.25rem; }
+
+/* ── Utilities ───────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 500px) {
+  .form-row { grid-template-columns: 1fr; }
+  .calendar-nav h2 { font-size: 1rem; }
+}

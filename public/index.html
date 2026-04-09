@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tax Document Delivery Calendar</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Schedule Your Tax Document Delivery</h1>
+      <p class="subtitle">Select a date to deliver your tax documents. Availability is limited to 5 returns per day.</p>
+    </header>
+
+    <div class="calendar-section">
+      <div class="calendar-nav">
+        <button id="prev-month" aria-label="Previous month">&larr;</button>
+        <h2 id="month-label"></h2>
+        <button id="next-month" aria-label="Next month">&rarr;</button>
+      </div>
+      <div class="calendar-grid">
+        <div class="day-header">Sun</div>
+        <div class="day-header">Mon</div>
+        <div class="day-header">Tue</div>
+        <div class="day-header">Wed</div>
+        <div class="day-header">Thu</div>
+        <div class="day-header">Fri</div>
+        <div class="day-header">Sat</div>
+        <div id="calendar-days"></div>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="dot available"></span> Available</span>
+        <span class="legend-item"><span class="dot limited"></span> Limited</span>
+        <span class="legend-item"><span class="dot full"></span> Full</span>
+      </div>
+    </div>
+
+    <!-- Booking Form (hidden until a date is selected) -->
+    <div id="booking-panel" class="booking-panel hidden">
+      <h3>Book: <span id="selected-date-label"></span></h3>
+      <p id="slots-remaining" class="slots-badge"></p>
+      <form id="booking-form">
+        <input type="hidden" id="form-date" />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="clientName">Full Name <span class="req">*</span></label>
+            <input type="text" id="clientName" required />
+          </div>
+          <div class="form-group">
+            <label for="clientEmail">Email <span class="req">*</span></label>
+            <input type="email" id="clientEmail" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="clientPhone">Phone</label>
+            <input type="tel" id="clientPhone" />
+          </div>
+          <div class="form-group">
+            <label for="companyName">Company / Entity Name</label>
+            <input type="text" id="companyName" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taxYear">Tax Year <span class="req">*</span></label>
+            <select id="taxYear" required>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <label for="notes">Additional Notes</label>
+          <textarea id="notes" rows="3" placeholder="Any special instructions or details about your documents..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="cancel-btn" class="btn-secondary">Cancel</button>
+          <button type="submit" id="submit-btn" class="btn-primary">Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Confirmation message -->
+    <div id="confirmation" class="confirmation hidden">
+      <div class="confirm-icon">&#10003;</div>
+      <h3>Booking Confirmed!</h3>
+      <p id="confirm-details"></p>
+      <button id="book-another" class="btn-primary">Book Another Date</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
