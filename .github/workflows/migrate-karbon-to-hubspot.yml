@@ -1,0 +1,40 @@
+name: Migrate Karbon → HubSpot
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (preview only, no changes to HubSpot)'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  migrate:
+    name: Run Migration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: claude/migrate-karbon-hubspot-i7fVm
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run migration
+        env:
+          KARBON_ACCESS_KEY: ${{ secrets.KARBON_ACCESS_KEY }}
+          KARBON_BEARER_TOKEN: ${{ secrets.KARBON_BEARER_TOKEN }}
+          HUBSPOT_ACCESS_TOKEN: ${{ secrets.HUBSPOT_ACCESS_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: npx tsx src/run-migration.ts

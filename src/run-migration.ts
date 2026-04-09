@@ -20,7 +20,10 @@ function mapDealStage(statusName: string): string {
 }
 
 async function main() {
+  const isDryRun = process.env.DRY_RUN === "true";
+
   console.log("=== Karbon → HubSpot Migration ===\n");
+  if (isDryRun) console.log("*** DRY RUN — no changes will be made to HubSpot ***\n");
   console.log("Lifecycle stage: customer (all records)\n");
 
   // ── 1. Fetch all Karbon data ──────────────────────────
@@ -71,6 +74,12 @@ async function main() {
         orgToHubSpotId.set(org.OrganizationKey, existing.data.results[0].id);
         stats.companiesSkipped++;
         console.log(`  SKIP  ${org.OrganizationName} (already exists)`);
+        continue;
+      }
+
+      if (isDryRun) {
+        stats.companiesCreated++;
+        console.log(`  [DRY] Would create company: ${org.OrganizationName} (lifecycle: customer)`);
         continue;
       }
 
@@ -129,6 +138,15 @@ async function main() {
         if (org) properties.company = org.OrganizationName;
       }
 
+      if (isDryRun) {
+        stats.contactsCreated++;
+        const orgName = contact.OrganizationKey
+          ? orgs.find((o) => o.OrganizationKey === contact.OrganizationKey)?.OrganizationName ?? ""
+          : "";
+        console.log(`  [DRY] Would create contact: ${contact.FullName} (${contact.EmailAddress})${orgName ? ` @ ${orgName}` : ""} (lifecycle: customer)`);
+        continue;
+      }
+
       const res = await hubspot.createContact(properties);
 
       if (res.ok) {
@@ -179,6 +197,12 @@ async function main() {
       if (wi.DueDate) properties.closedate = wi.DueDate;
       if (wi.Description) properties.description = wi.Description;
 
+      if (isDryRun) {
+        stats.dealsCreated++;
+        console.log(`  [DRY] Would create deal: ${wi.Title} [${statusName} → ${dealstage}]`);
+        continue;
+      }
+
       const res = await hubspot.createDeal(properties);
 
       if (res.ok) {
@@ -222,11 +246,11 @@ async function main() {
   console.log(`  → ${stats.dealsCreated} created, ${stats.dealsSkipped} skipped\n`);
 
   // ── 5. Summary ────────────────────────────────────────
-  console.log("=== Migration Complete ===\n");
-  console.log(`Companies:    ${stats.companiesCreated} created, ${stats.companiesSkipped} skipped`);
-  console.log(`Contacts:     ${stats.contactsCreated} created, ${stats.contactsSkipped} skipped, ${stats.contactsNoEmail} no email`);
-  console.log(`Deals:        ${stats.dealsCreated} created, ${stats.dealsSkipped} skipped`);
-  console.log(`Associations: ${stats.associations}`);
+  console.log(`=== Migration ${isDryRun ? "Preview" : "Complete"} ===\n`);
+  console.log(`Companies:    ${stats.companiesCreated} ${isDryRun ? "would be created" : "created"}, ${stats.companiesSkipped} skipped`);
+  console.log(`Contacts:     ${stats.contactsCreated} ${isDryRun ? "would be created" : "created"}, ${stats.contactsSkipped} skipped, ${stats.contactsNoEmail} no email`);
+  console.log(`Deals:        ${stats.dealsCreated} ${isDryRun ? "would be created" : "created"}, ${stats.dealsSkipped} skipped`);
+  if (!isDryRun) console.log(`Associations: ${stats.associations}`);
 
   if (stats.errors.length > 0) {
     console.log(`\nErrors (${stats.errors.length}):`);
@@ -234,6 +258,7 @@ async function main() {
   }
 
   console.log("\nAll contacts and companies tagged with lifecycle stage: customer");
+  if (isDryRun) console.log("\n*** This was a DRY RUN. Run again with DRY_RUN=false to execute. ***");
 }
 
 main().catch((err) => {
