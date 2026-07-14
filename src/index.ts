@@ -4,6 +4,7 @@ import { z } from "zod";
 import { registerKarbonTools } from "./karbon/tools.js";
 import { registerOutlookTools } from "./outlook/tools.js";
 import { registerReportingTools } from "./reporting/tools.js";
+import { registerRavenTools } from "./raven/tools.js";
 
 const server = new McpServer({
   name: "executive-assistant",
@@ -99,11 +100,38 @@ Provide a concise status update I could share with a partner.`,
   }),
 );
 
+server.prompt(
+  "raven_handle_lead",
+  "Raven (LAPS Sales Coordinator): triage an inbound prospect email and route it correctly",
+  { messageId: z.string().optional().describe("Raven-mailbox message id to handle") },
+  ({ messageId }) => ({
+    messages: [
+      {
+        role: "user" as const,
+        content: {
+          type: "text" as const,
+          text: `Act as Raven, Edler Zain's LAPS Sales Coordinator. Load your operating rules with raven_get_persona and follow them exactly — the on-behalf-of disclosure and escalation rules are load-bearing.
+
+Handle ${messageId ? `message ${messageId}` : "the next unread inbound lead (raven_list_inbox)"}:
+1. Read the message (raven_get_message).
+2. Classify it (raven_classify_message) — scheduling, reminder, first_touch, persuasive, pricing_adjacent, post_call_followup, or escalation.
+3. Resolve the attributed human owner (raven_resolve_owner).
+4. Draft a reply in the owner's voice — scheduling/logistics only, never quote a fee or make a scope commitment.
+5. Route it with raven_handle_email, which enforces the HITL gate, disclosure footer, and audit log. During soft launch every send routes through human approval.
+
+If the prospect shows frustration, urgency, or asks a technical tax/QoE question, escalate rather than guessing.`,
+        },
+      },
+    ],
+  }),
+);
+
 // ── Register all tools ────────────────────────────────────
 
 registerKarbonTools(server);
 registerOutlookTools(server);
 registerReportingTools(server);
+registerRavenTools(server);
 
 // ── Start ─────────────────────────────────────────────────
 

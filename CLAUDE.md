@@ -17,11 +17,20 @@ src/
 ├── outlook/
 │   ├── client.ts         # Microsoft Graph API client (email, calendar)
 │   └── tools.ts          # MCP tool definitions for Outlook
-└── reporting/
-    └── tools.ts          # Composite reporting tools (daily briefing, workload, deadlines)
+├── reporting/
+│   └── tools.ts          # Composite reporting tools (daily briefing, workload, deadlines)
+└── raven/                # LAPS Sales Coordinator agent (see docs/raven.md)
+    ├── graph.ts          # Graph *application*-auth client scoped to the shared mailbox
+    ├── persona.ts        # Verbatim system prompt + disclosure/escalation constants
+    ├── classifier.ts     # Deterministic message classification → routing
+    ├── attribution.ts    # HubSpot deal-owner lookup + configurable fallback
+    ├── disclosure.ts     # On-behalf-of footer, never-impersonate + pricing guards
+    ├── hitl.ts           # Human-in-the-loop gate (pluggable approver)
+    ├── logging.ts        # JSONL audit trail
+    └── tools.ts          # MCP tool definitions for Raven
 ```
 
-## Available Tools (38 total)
+## Available Tools (45 total)
 
 ### Karbon (18 tools)
 - `karbon_search_contacts` / `karbon_get_contact` / `karbon_list_contacts`
@@ -48,11 +57,19 @@ src/
 - `report_email_summary` — Inbox stats, top senders, high-priority items
 - `report_deadlines` — Overdue and upcoming deadlines
 
-### Prompt Templates (4)
+### Raven — LAPS Sales Coordinator (7 tools)
+See `docs/raven.md` for setup and the mandatory M365 provisioning steps.
+- `raven_get_persona`
+- `raven_list_inbox` / `raven_get_message`
+- `raven_classify_message` / `raven_resolve_owner`
+- `raven_compose_email` / `raven_handle_email`
+
+### Prompt Templates (5)
 - `daily_standup` — Morning routine: calendar, inbox triage, overdue items
 - `weekly_ops_report` — Full weekly operational report
 - `email_triage` — Categorize inbox and suggest actions
 - `client_status_check` — Deep-dive on a specific client's work
+- `raven_handle_lead` — Raven triages an inbound prospect email and routes it
 
 ## Setup
 
